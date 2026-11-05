@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="css/site.css?v=20261103-2" />
+  <link rel="stylesheet" href="css/site.css?v=20261105-1" />
   <script>
     // Thema direct zetten (voorkomt flitsen); zelfde voorkeur als de rest van de site.
     try {
@@ -91,9 +91,18 @@
     </div>
   </aside>
 
+  <dialog id="noticeDialog" class="notice" aria-labelledby="noticeTitle" aria-describedby="noticeText">
+    <form method="dialog" class="notice-box">
+      <p class="eyebrow">Let op</p>
+      <h2 id="noticeTitle" class="title"></h2>
+      <p id="noticeText"></p>
+      <div class="notice-actions"><button type="submit" id="noticeOk" class="btn btn-primary">Begrepen</button></div>
+    </form>
+  </dialog>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="script/site.js?v=20261021-1"></script>
   <script src="script/script.js?v=20261029-rma"></script>
-  <script src="script/zorgtool.js?v=20261103-1"></script>
+  <script src="script/zorgtool.js?v=20261105-1"></script>
 </body>
 </html>

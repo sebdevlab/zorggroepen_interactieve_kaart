@@ -284,6 +284,23 @@ select.field { padding-right: 8px; cursor: pointer; }
 }
 .alert.is-done { opacity: 0.75; }
 
+/* Melding als pop-up (Zorgtool): midden in beeld, eerst wegklikken */
+.notice {
+  width: min(480px, calc(100vw - 32px));
+  padding: 0;
+  border: 1px solid var(--warn-line);
+  border-top: 6px solid var(--warn-line);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+}
+.notice::backdrop { background: rgba(16, 18, 22, 0.55); }
+.notice-box { padding: 20px 22px 18px; }
+.notice-box .eyebrow { color: var(--warn-text); }
+.notice-box p { margin: 10px 0 0; }
+.notice-actions { display: flex; justify-content: flex-end; margin-top: 18px; }
+.notice[open] { animation: enter var(--t) var(--ease); }
+
 /* Skeleton i.p.v. spinners */
 .skel { display: grid; gap: 10px; padding: 18px 0; }
 .skel span { display: block; height: 14px; border-radius: 3px; background: var(--skeleton); animation: pulse 1.2s ease-in-out infinite; }

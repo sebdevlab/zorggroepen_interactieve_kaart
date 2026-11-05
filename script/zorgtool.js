@@ -305,25 +305,63 @@
 
   const display = (pc) => (/^\d{4}[A-Z]{2}$/.test(pc) ? `${pc.slice(0, 4)} ${pc.slice(4)}` : pc);
 
-  function alertsHtml() {
-    if (!logicLoaded()) return "";
+  // Meldingen voor de huidige selectie. Ze verschijnen eerst als pop-up die je moet wegklikken,
+  // daarna blijven ze (met vinkje) als geheugensteun bij het resultaat staan.
+  function activeAlerts() {
+    if (!logicLoaded()) return [];
     const out = [];
     const insurerKey = normalizeInsurerKey(currentZorgverzekeraar);
-    const alert = (id, title, text, button, done) => out.push(`
-      <div class="alert${done ? " is-done" : ""}" data-alert="${id}">
-        <strong>${esc(title)}</strong>${esc(text)}
-        <div class="alert-actions">${done ? `<span>✓ ${esc(button)}</span>` : `<button type="button" data-ack="${id}">${esc(button)}</button>`}</div>
-      </div>`);
     if (ui.ready && currentSelectionIsZhz()) {
-      alert("zhz", "Regio Zuid-Holland Zuid", "Verwijzingen uit deze regio mogen uitsluitend via Monter worden verwerkt, niet via Zorgdomein.", "Begrepen", zhzReferralAcknowledged);
+      out.push({ id: "zhz", title: "Regio Zuid-Holland Zuid", text: "Verwijzingen uit deze regio mogen uitsluitend via Monter worden verwerkt, niet via Zorgdomein.", button: "Begrepen", done: zhzReferralAcknowledged });
     }
     if (insurerKey === "vgz") {
-      alert("vgz", "Let op bij VGZ", "Controleer of de verwijzing afkomstig is van een huisarts of specialist. VGZ keurt declaraties niet goed als de verwijzing van een specialist komt.", "Ik heb gecontroleerd", zorgverzekeraarNoticeAcknowledged);
+      out.push({ id: "vgz", title: "Let op bij VGZ", text: "Controleer of de verwijzing afkomstig is van een huisarts of specialist. VGZ keurt declaraties niet goed als de verwijzing van een specialist komt.", button: "Ik heb gecontroleerd", done: zorgverzekeraarNoticeAcknowledged });
     }
     if (insurerKey === "rma") {
-      alert("rma", "RMA (asielzoekersverzekering)", "De GLI (Gecombineerde Leefstijlinterventie) wordt niet vergoed binnen deze verzekering.", "Begrepen", rmaNoticeAcknowledged);
+      out.push({ id: "rma", title: "RMA (asielzoekersverzekering)", text: "De GLI (Gecombineerde Leefstijlinterventie) wordt niet vergoed binnen deze verzekering.", button: "Begrepen", done: rmaNoticeAcknowledged });
     }
-    return out.join("");
+    return out;
+  }
+
+  function alertsHtml() {
+    return activeAlerts().map((a) => `
+      <div class="alert${a.done ? " is-done" : ""}" data-alert="${a.id}">
+        <strong>${esc(a.title)}</strong>${esc(a.text)}
+        <div class="alert-actions">${a.done ? `<span>✓ ${esc(a.button)}</span>` : `<button type="button" data-ack="${a.id}">${esc(a.button)}</button>`}</div>
+      </div>`).join("");
+  }
+
+  function acknowledge(id) {
+    if (id === "zhz") zhzReferralAcknowledged = true;
+    if (id === "vgz") zorgverzekeraarNoticeAcknowledged = true;
+    if (id === "rma") rmaNoticeAcknowledged = true;
+    const box = $("result").querySelector(`.alert[data-alert="${id}"]`);
+    const btn = box && box.querySelector("[data-ack]");
+    if (btn) {
+      box.classList.add("is-done");
+      btn.replaceWith(Object.assign(document.createElement("span"), { textContent: `✓ ${btn.textContent}` }));
+    }
+  }
+
+  // Pop-up voor de eerstvolgende melding die nog niet is weggeklikt.
+  const noticeDialog = $("noticeDialog");
+  function showNextNotice() {
+    if (!noticeDialog || noticeDialog.open) return;
+    const next = activeAlerts().find((a) => !a.done);
+    if (!next) return;
+    noticeDialog.dataset.alert = next.id;
+    $("noticeTitle").textContent = next.title;
+    $("noticeText").textContent = next.text;
+    $("noticeOk").textContent = next.button;
+    noticeDialog.showModal();
+    $("noticeOk").focus();
+  }
+  if (noticeDialog) {
+    // Wegklikken (knop of Escape) telt als gezien; daarna eventueel de volgende melding.
+    noticeDialog.addEventListener("close", () => {
+      acknowledge(noticeDialog.dataset.alert);
+      setTimeout(showNextNotice, 0);
+    });
   }
 
   function renderResult({ title, meta = "", note = "", postcodeItems = null, postcodeMeta = "", why = {} }) {
@@ -372,6 +410,7 @@
     updateCityList(r.scoped);
     $("cityCount").textContent = `(${$("cityList").querySelectorAll("li").length})`;
     if (postcodeItems) setPostcodePanelState(postcodeMeta, postcodeItems);
+    showNextNotice();
     return r;
   }
 
@@ -382,6 +421,7 @@
         <p class="meta">Of klik op een gebied op de kaart.</p>
         ${alertsHtml()}
       </section>`;
+    showNextNotice();
   }
 
   function renderEmpty(title, hint) {
@@ -392,6 +432,7 @@
         <p class="meta">${esc(hint)}</p>
         ${alertsHtml()}
       </section>`;
+    showNextNotice();
   }
 
   function renderLoading() {
@@ -731,14 +772,7 @@
 
   $("result").addEventListener("click", (e) => {
     const ack = e.target.closest("[data-ack]");
-    if (ack) {
-      if (ack.dataset.ack === "zhz") zhzReferralAcknowledged = true;
-      if (ack.dataset.ack === "vgz") zorgverzekeraarNoticeAcknowledged = true;
-      if (ack.dataset.ack === "rma") rmaNoticeAcknowledged = true;
-      const box = ack.closest(".alert");
-      box.classList.add("is-done");
-      ack.replaceWith(Object.assign(document.createElement("span"), { textContent: `✓ ${ack.textContent}` }));
-    }
+    if (ack) acknowledge(ack.dataset.ack);
     if (e.target.closest("#retryBtn")) rerun();
   });
 
