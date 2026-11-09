@@ -1,6 +1,17 @@
 {
   "updates": [
     {
+      "date": "2026-11-09",
+      "title": "Meldingen als pop-up en nieuw aanspreekpunt",
+      "scope": "website",
+      "description": "De meldingen in de Zorgtool verschijnen weer als pop-up die je eerst wegklikt, zodat ze niet over het hoofd worden gezien. Vragen of updates gaan voortaan naar Sebas.",
+      "summary": [
+        "Pop-up bij een VGZ-verzekeraar (VGZ, IZZ door VGZ, VGZbewuzt, IZA, UMC, Univé, Zekur): eerst controleren en bevestigen.",
+        "Pop-up bij Zuid-Holland Zuid (loopt via Monter) en bij RMA (asielzoekersverzekering).",
+        "Contact onderaan de pagina's en bij het wachtwoordscherm: info@miguide.nl of een intern bericht aan Sebas."
+      ]
+    },
+    {
       "date": "2026-11-03",
       "title": "Nieuw ontwerp voor de hele site",
       "scope": "website",

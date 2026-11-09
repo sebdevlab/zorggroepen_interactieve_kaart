@@ -19,3 +19,6 @@ backups/
 
 # Preview/launch helper
 .claude/launch.json
+
+# Overdrachtsdocument met handmatig ingevulde wachtwoorden: nooit naar GitHub
+overdracht/*.docx

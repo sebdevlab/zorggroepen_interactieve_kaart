@@ -97,7 +97,7 @@ window.ZT = (() => {
         <input id="gatePw" class="field" type="password" autocomplete="current-password" required />
         <button type="submit" class="btn btn-primary">Inloggen</button>
         <p class="gate-error" id="gateError" role="alert" hidden>Onjuist wachtwoord.</p>
-        <p class="meta field-gap">Geen toegang? Mail info@miguide.nl of stuur Onur een intern Teams-bericht.</p>
+        <p class="meta field-gap">Geen toegang? Mail info@miguide.nl of stuur Sebas een intern Teams-bericht.</p>
       </form>`;
     document.body.appendChild(gate);
     document.body.setAttribute("aria-busy", "true");
